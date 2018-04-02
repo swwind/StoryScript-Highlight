@@ -1,5 +1,5 @@
-sublime-StoryScript
--------------------
+StoryScript-Highlight
+---------------------
 
 A highlight plugin for [avgjs/storyscript](https://github.com/avgjs/storyscript).
 
