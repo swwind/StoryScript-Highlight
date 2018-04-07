@@ -15,11 +15,9 @@ contexts:
         1: punctuation.definition.tag.begin.ssc
         2: markup.bold.ssc
         3: punctuation.definition.tag.end.ssc
-    - match: ^#(?:if|elseif|while|foreach|let)
+    - match: ^#\s*(?:if|elseif|while|foreach|let|else|end)\b
       scope: keyword.control.ssc
       push: expression
-    - match: ^#(?:else|end)
-      scope: keyword.control.ssc
     - match: (?<!\\)(\[)(\w+)\b
       captures:
         1: punctuation.definition.tag.begin.ssc
@@ -31,7 +29,10 @@ contexts:
       scope: entity.other.attribute-name.ssc
     - match: =\s*
       scope: punctuation.separator.key-value.ssc
-      push: value
+      push:
+        - include: value
+        - match: ''
+          pop: true
     - match: \]
       scope: punctuation.definition.tag.end.ssc
       pop: true
@@ -48,18 +49,17 @@ contexts:
     - match: \[
       scope: punctuation.definition.array.begin.ssc
       push: array
-    - match: ''
-      pop: true
 
   array:
     - match: \]
       scope: punctuation.definition.end.begin.ssc
       pop: true
-    - match: ','
-      scope: punctuation.separator.ssc
-      push: value
     - match: ''
-      push: value
+      push:
+        - include: value
+        - match: ",?"
+          scope: punctuation.separator.ssc
+          pop: true
 
   double-string:
     - meta_scope: string.quoted.double.ssc
@@ -77,24 +77,18 @@ contexts:
       scope: punctuation.definition.string.end.ssc
       pop: true
 
+  # script expression
   expression:
-    - include: numbers
-    - include: boolean
+    - include: value
     - include: comments
     - match: (?:in)
       scope: keyword.control.ssc
-    - match: (?:[%\$]?\w+)
+    - match: ([%\$])?\w+
       scope: variable.other.ssc
+      captures:
+        1: punctuation.definition.variable.perl
     - match: (?:[\+\-\*/%<>=&\|])
       scope: keyword.operator.ssc
-    - match: (?<==)\s*(")
-      captures:
-        1: punctuation.definition.string.begin.ssc
-      push: double-string
-    - match: (?<==)\s*(')
-      captures:
-        1: punctuation.definition.string.begin.ssc
-      push: single-string
     - match: \n
       pop: true
 
